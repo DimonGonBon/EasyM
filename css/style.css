@@ -193,3 +193,19 @@ hr{border:0;border-top:1px solid var(--border);margin:10px 0}
   text-align: center;
   font-weight: 600;
 }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--fg);
+  overflow-x: hidden;
+}
+
+html {
+  overflow-y: scroll;
+}
+
+.container {
+  width: 100%;
+}
