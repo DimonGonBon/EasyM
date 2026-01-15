@@ -168,3 +168,28 @@ hr{border:0;border-top:1px solid var(--border);margin:10px 0}
   color:var(--fg);
   font-size:13px;
 }
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: gray;
+  margin-right: 6px;
+}
+
+.dot.ok {
+  background: #22c55e;
+}
+
+.dot.bad {
+  background: #ef4444;
+}
+
+.offline-banner {
+  background: #ef4444;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  font-weight: 600;
+}

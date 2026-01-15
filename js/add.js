@@ -1,7 +1,17 @@
-import { loadItems, saveItems, setOnlineBadge, registerSW, requestLocation, fileToDataURL } from './app.js';
+import {
+  loadItems,
+  saveItems,
+  setOnlineBadge,
+  registerSW,
+  requestLocation,
+  fileToDataURL,
+  setupOfflineBanner
+} from './app.js';
 
+setupOfflineBanner();
 registerSW();
 setOnlineBadge(document.getElementById('onlineBadge'));
+
 
 const titleEl = document.getElementById('title');
 const notesEl = document.getElementById('notes');

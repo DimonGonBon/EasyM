@@ -1,17 +1,20 @@
-// Minimalny Service Worker: cache-first dla statycznych plików (App Shell)
+const CACHE_NAME = 'easymanual-offline-v1';
 
-const CACHE_NAME = 'easymanual-cache-v1';
-const APP_SHELL = [
+const ASSETS = [
   './',
   './index.html',
   './add.html',
   './map.html',
   './offline.html',
+
   './css/style.css',
+  './css/responsive.css',
+
+  './js/app.js',
   './js/index.js',
   './js/add.js',
   './js/map.js',
-  './js/app.js',
+
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'
@@ -19,7 +22,9 @@ const APP_SHELL = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS);
+    })
   );
   self.skipWaiting();
 });
@@ -27,42 +32,49 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.map((k) => (k !== CACHE_NAME ? caches.delete(k) : null)))
+      Promise.all(
+        keys.map((k) => (k !== CACHE_NAME ? caches.delete(k) : null))
+      )
     )
   );
   self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
-  const req = event.request;
-  if (req.method !== 'GET') return;
 
-  // network-first dla dokumentów (żeby aktualizacje wchodziły), z fallback do cache
-  const isHTML = req.headers.get('accept')?.includes('text/html');
-  if (isHTML) {
+self.addEventListener('fetch', (event) => {
+  if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(req)
-        .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE_NAME).then((c) => c.put(req, copy));
-          return res;
-        })
-        .catch(async () => {
-          const cached = await caches.match(req);
-          return cached || caches.match('./offline.html');
-        })
+      fetch(event.request).catch(() => caches.match('/index.html'))
     );
     return;
   }
 
-  // cache-first dla reszty (css/js/ikony)
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
-    caches.match(req).then((cached) =>
-      cached || fetch(req).then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE_NAME).then((c) => c.put(req, copy));
-        return res;
+    caches.match(event.request).then((cached) => {
+      return cached || fetch(event.request);
+    })
+  );
+});
+
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, copy);
+        });
+        return response;
       })
-    )
+      .catch(() => {
+        return caches.match(event.request).then((cached) => {
+          return cached || caches.match('./offline.html');
+        });
+      })
   );
 });

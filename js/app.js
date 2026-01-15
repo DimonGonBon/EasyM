@@ -11,11 +11,18 @@ export function loadItems() {
   }
 }
 
+export function registerSW() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js');
+  }
+}
+
+
+
 export function saveItems(items) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
 }
 
-// Сделаем безопасный setOnlineBadge: чтобы не падал если элементы не найдены
 export function setOnlineBadge(dotEl, textEl) {
   const update = () => {
     const online = navigator.onLine;
@@ -26,20 +33,25 @@ export function setOnlineBadge(dotEl, textEl) {
   update();
   window.addEventListener('online', update);
   window.addEventListener('offline', update);
+
+  setInterval(update, 1000);
+}
+
+export function setupOfflineBanner() {
+  const banner = document.getElementById('offlineBanner');
+  if (!banner) return;
+
+  const update = () => {
+    banner.hidden = navigator.onLine;
+  };
+  update();
+  window.addEventListener('online', update);
+  window.addEventListener('offline', update);
+
+  setInterval(update, 1000);
 }
 
 
-export function registerSW() {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', async () => {
-      try {
-        await navigator.serviceWorker.register('./service-worker.js');
-      } catch (e) {
-        // celowo cicho — to projekt na zaliczenie
-      }
-    });
-  }
-}
 
 export function requestLocation() {
   return new Promise((resolve, reject) => {

@@ -1,4 +1,9 @@
-(() => {
+import { registerSW } from './app.js';
+import { setupOfflineBanner } from './app.js';
+setupOfflineBanner();
+registerSW();
+
+
   const coordsEl = document.getElementById('coords');
   const statusEl = document.getElementById('status');
   const listEl = document.getElementById('list');
@@ -74,4 +79,3 @@
   });
 
   renderList();
-})();

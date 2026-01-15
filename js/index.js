@@ -1,14 +1,19 @@
-console.log('INDEX JS LOADED');
+import {
+  loadItems,
+  saveItems,
+  setOnlineBadge,
+  registerSW,
+  setupOfflineBanner
+} from './app.js';
 
-
-
-import { loadItems, saveItems, setOnlineBadge, registerSW } from './app.js';
-
+setupOfflineBanner();
 registerSW();
+
 setOnlineBadge(
   document.getElementById('statusDot'),
   document.getElementById('statusText')
 );
+
 
 
 const listEl = document.getElementById('list');
