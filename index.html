@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#1f5eff" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./css/style.css">
+  <title>EasyManual — Lista</title>
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <div class="row">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <strong>EasyManual</strong>
+            <small>PWA: offline + kamera + lokalizacja</small>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <a class="active" href="./index.html">Lista</a>
+          <a href="./add.html">Dodaj</a>
+          <a href="./map.html">Lokalizacja</a>
+        </nav>
+
+        <div class="badge" title="Status połączenia">
+          <span id="onlineBadge" class="dot"></span>
+          <span id="statusText">ONLINE</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="mainTitle">
+      <div>
+        <h1>Wpisy</h1>
+        <div class="sub">Zapis w localStorage — działa także offline</div>
+      </div>
+
+      <div class="btnRow">
+        <button id="installBtn" class="secondary" style="display:none">Zainstaluj</button>
+        <a href="./add.html" style="text-decoration:none">
+          <button class="primary">Dodaj wpis</button>
+        </a>
+      </div>
+    </div>
+
+    <div id="list" class="list"></div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="btnRow">
+        <button id="clearBtn" class="secondary">Wyczyść wszystko</button>
+      </div>
+    </div>
+  </main>
+
+  <div class="footer">EasyManual • PWA</div>
+
+  <script type="module" src="js/index.js"></script>
+</body>
+</html>

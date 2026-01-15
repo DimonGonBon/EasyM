@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#1f5eff" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./css/style.css">
+  <title>Offline</title>
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <div class="row">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <strong>EasyManual</strong>
+            <small>Tryb offline</small>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <a href="./index.html">Lista</a>
+          <a href="./add.html">Dodaj</a>
+          <a href="./map.html">Lokalizacja</a>
+        </nav>
+
+        <div class="badge">
+          <span class="dot off"></span>
+          <span>OFFLINE</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="mainTitle">
+      <div>
+        <h1>Brak internetu</h1>
+        <div class="sub">Aplikacja nadal działa: możesz przeglądać zapisane dane.</div>
+      </div>
+    </div>
+
+    <div class="card stack">
+      <div class="notice">
+        Dostępne offline: Lista wpisów, dodawanie wpisu (zapis lokalny), podgląd zapisanych współrzędnych.
+      </div>
+      <div class="btnRow">
+        <a href="./index.html" style="text-decoration:none"><button class="primary">Wróć do listy</button></a>
+      </div>
+    </div>
+  </main>
+
+  <div class="footer">Offline fallback</div>
+</body>
+</html>

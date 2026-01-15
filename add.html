@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#1f5eff" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./css/style.css">
+  <title>EasyManual — Dodaj</title>
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <div class="row">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <strong>EasyManual</strong>
+            <small>Dodawanie wpisu</small>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <a href="./index.html">Lista</a>
+          <a class="active" href="./add.html">Dodaj</a>
+          <a href="./map.html">Lokalizacja</a>
+        </nav>
+
+        <div class="badge">
+          <span id="onlineBadge" class="dot"></span>
+          <span>STATUS</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="mainTitle">
+      <div>
+        <h1>Nowy wpis</h1>
+        <div class="sub">Możesz dodać zdjęcie i (opcjonalnie) lokalizację</div>
+      </div>
+    </div>
+
+    <div class="card stack">
+      <div>
+        <label for="title">Tytuł</label>
+        <input id="title" type="text" placeholder="np. Instrukcja / notatka" />
+      </div>
+
+      <div>
+        <label for="notes">Opis</label>
+        <textarea id="notes" placeholder="Krótki opis..."></textarea>
+      </div>
+
+      <div class="grid2">
+        <div>
+          <label for="photo">Zdjęcie (kamera)</label>
+          <input id="photo" type="file" accept="image/*" capture="environment" />
+          <div class="sub" style="margin-top:6px">Jeśli nie działa, wybierz zdjęcie z galerii.</div>
+        </div>
+
+        <div>
+          <label>Podgląd</label>
+          <img id="preview" class="thumb" alt="Podgląd zdjęcia" style="display:none" />
+          <div class="notice" id="noPreview" style="margin-top:6px">Brak zdjęcia</div>
+        </div>
+      </div>
+
+      <div class="card" style="box-shadow:none;border-style:dashed">
+        <div class="btnRow">
+          <button id="locBtn" class="secondary" type="button">Pobierz lokalizację</button>
+          <button id="saveBtn" class="primary" type="button">Zapisz</button>
+        </div>
+        <div id="locInfo" class="sub" style="margin-top:8px"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="footer">Wszystko zapisuje się lokalnie (offline)</div>
+
+  <script type="module" src="js/add.js"></script>
+</body>
+</html>

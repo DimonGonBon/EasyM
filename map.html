@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#1f5eff" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./css/style.css">
+  <title>EasyManual — Lokalizacja</title>
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <div class="row">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <strong>EasyManual</strong>
+            <small>Lokalizacja i zapisane współrzędne</small>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <a href="./index.html">Lista</a>
+          <a href="./add.html">Dodaj</a>
+          <a class="active" href="./map.html">Lokalizacja</a>
+        </nav>
+
+        <div class="badge">
+          <span id="offlineBadge" class="dot"></span>
+          <span>STATUS</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="mainTitle">
+      <div>
+        <h1>Bieżąca lokalizacja</h1>
+        <div class="sub">Wymaga zgody w przeglądarce (HTTPS lub localhost)</div>
+      </div>
+      <div class="btnRow">
+        <button id="btnLocate" class="secondary" type="button">Pobierz bieżącą lokalizację</button>
+        <button id="btnCopy" class="primary" type="button">Kopiuj współrzędne</button>
+      </div>
+    </div>
+
+    <div class="card stack">
+      <div id="coords" class="notice">Współrzędne: —</div>
+      <div id="status" class="sub"></div>
+    </div>
+
+    <div class="mainTitle" style="margin-top:18px">
+      <div>
+        <h1>Zapisane współrzędne</h1>
+        <div class="sub">Zapisane razem z wpisami</div>
+      </div>
+    </div>
+
+    <div id="empty" class="notice">Brak zapisanych lokalizacji.</div>
+    <div id="list" class="list"></div>
+  </main>
+
+  <div class="footer">Źródło mapy: OpenStreetMap</div>
+
+  <script type="module" src="js/map.js"></script>
+</body>
+</html>
