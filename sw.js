@@ -37,7 +37,6 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(req.url);
 
-  // Cache-first for same-origin static assets
   if (url.origin === location.origin) {
     event.respondWith(
       caches.match(req).then(cached => {
@@ -54,7 +53,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Network-first for cross-origin (just in case)
   event.respondWith(
     fetch(req).catch(() => caches.match(req))
   );

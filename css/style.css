@@ -209,3 +209,33 @@ html {
 .container {
   width: 100%;
 }
+
+.topbar {
+  position: sticky;
+  top: 0;
+}
+
+.topbar .row {
+  position: relative;
+}
+
+.badge {
+  position: absolute;
+  left: 16px;
+  bottom: 10px;
+
+  min-width: 110px;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+@media (min-width: 721px) {
+  .badge {
+    left: auto;
+    right: 16px;
+    bottom: 50%;
+    transform: translateY(50%);
+  }
+}
+
+

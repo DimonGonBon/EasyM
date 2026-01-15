@@ -1,5 +1,5 @@
 import { registerSW } from './app.js';
-import { setupOfflineBanner } from './app.js';
+import { setupOfflineBanner, setOnlineBadge, loadItems } from './app.js';
 setupOfflineBanner();
 registerSW();
 
@@ -10,7 +10,7 @@ registerSW();
   const emptyEl = document.getElementById('empty');
 
   function renderList() {
-    const items = window.EasyManualStore.getAll();
+    const items = loadItems();
     const withGeo = items.filter(i => i.lat != null && i.lng != null);
     listEl.innerHTML = '';
     if (withGeo.length === 0) {

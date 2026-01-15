@@ -53,7 +53,6 @@ clearBtn.addEventListener('click', () => {
   }
 });
 
-// Install prompt (PWA)
 let deferredPrompt = null;
 const installBtn = document.getElementById('installBtn');
 window.addEventListener('beforeinstallprompt', (e) => {

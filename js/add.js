@@ -33,7 +33,6 @@ photoEl.addEventListener('change', async () => {
 
   photoDataUrl = await fileToDataURL(file);
 
-  // podgląd
   previewEl.src = photoDataUrl;
   previewEl.style.display = 'block';
   if (noPreviewEl) noPreviewEl.style.display = 'none';
