@@ -1,42 +1,79 @@
-import { registerSW } from './app.js';
-import { setupOfflineBanner, setOnlineBadge, loadItems } from './app.js';
+import {
+  registerSW,
+  setupOfflineBanner,
+  setOnlineBadge,
+  loadItems
+} from './app.js';
 setupOfflineBanner();
 registerSW();
+
+setOnlineBadge(
+  document.getElementById('statusDot'),
+  document.getElementById('statusText')
+);
 
 
   const coordsEl = document.getElementById('coords');
   const statusEl = document.getElementById('status');
-  const listEl = document.getElementById('list');
+  const listEl = document.getElementById('list'); 
   const emptyEl = document.getElementById('empty');
 
-  function renderList() {
-    const items = loadItems();
-    const withGeo = items.filter(i => i.lat != null && i.lng != null);
-    listEl.innerHTML = '';
-    if (withGeo.length === 0) {
-      emptyEl.style.display = 'block';
-      return;
-    }
-    emptyEl.style.display = 'none';
-    for (const it of withGeo) {
-      const div = document.createElement('div');
-      div.className = 'card';
-      div.style.background = '#fff';
-      div.innerHTML = `
-        <div class="row" style="align-items:flex-start">
-          <div style="flex:2">
-            <strong>${escapeHtml(it.title || 'Bez nazwy')}</strong>
-            <div class="small">${new Date(it.createdAt).toLocaleString()}</div>
-            <div class="small">lat: ${it.lat.toFixed(6)}, lng: ${it.lng.toFixed(6)}</div>
-          </div>
-          <div style="flex:1">
-            <a href="https://www.openstreetmap.org/?mlat=${it.lat}&mlon=${it.lng}#map=16/${it.lat}/${it.lng}" target="_blank" rel="noopener">Otwórz na mapie</a>
-          </div>
-        </div>
-      `;
-      listEl.appendChild(div);
-    }
+  let lastCoords = null;
+
+function renderList() {
+  const items = loadItems();
+  const withGeo = items.filter(i => i.lat != null && i.lng != null);
+
+  listEl.innerHTML = '';
+
+  if (withGeo.length === 0) {
+    emptyEl.style.display = 'block';
+    return;
   }
+
+  emptyEl.style.display = 'none';
+
+  for (const it of withGeo) {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.style.alignItems = 'flex-start';
+
+    const left = document.createElement('div');
+    left.style.flex = '2';
+
+    const title = document.createElement('strong');
+    title.textContent = it.title || 'Bez nazwy';
+
+    const date = document.createElement('div');
+    date.className = 'small';
+    date.textContent = new Date(it.createdAt).toLocaleString();
+
+    const coords = document.createElement('div');
+    coords.className = 'small';
+    coords.textContent = `lat: ${it.lat.toFixed(6)}, lng: ${it.lng.toFixed(6)}`;
+
+    left.append(title, date, coords);
+
+    const right = document.createElement('div');
+    right.style.flex = '1';
+
+    const link = document.createElement('a');
+    link.href = `https://www.openstreetmap.org/?mlat=${it.lat}&mlon=${it.lng}#map=16/${it.lat}/${it.lng}`;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = 'Otwórz na mapie';
+
+    right.appendChild(link);
+
+    row.append(left, right);
+    card.appendChild(row);
+    listEl.appendChild(card);
+  }
+}
+
 
   function escapeHtml(str) {
     return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
@@ -54,7 +91,8 @@ registerSW();
         const { latitude, longitude, accuracy } = pos.coords;
         coordsEl.textContent = `Współrzędne: ${latitude.toFixed(6)}, ${longitude.toFixed(6)} (±${Math.round(accuracy)}m)`;
         statusEl.textContent = 'Gotowe. (Zgoda przyznana)';
-        window.__lastCoords = { latitude, longitude };
+        lastCoords = { latitude, longitude };
+
       },
       (err) => {
         statusEl.textContent = `Błąd geolokalizacji: ${err.message}`;
@@ -64,7 +102,7 @@ registerSW();
   });
 
   document.getElementById('btnCopy').addEventListener('click', async () => {
-    const c = window.__lastCoords;
+     const c = lastCoords;
     if (!c) {
       statusEl.textContent = 'Najpierw kliknij „Pobierz bieżącą lokalizację”.';
       return;

@@ -1,7 +1,6 @@
 const CACHE_NAME = 'easymanual-offline-v1';
 
 const ASSETS = [
-  './',
   './index.html',
   './add.html',
   './map.html',

@@ -20,6 +20,10 @@ export function registerSW() {
 
 
 export function saveItems(items) {
+  if (!Array.isArray(items)) {
+    console.error('saveItems: invalid data');
+    return;
+  }
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
 }
 

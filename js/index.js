@@ -14,52 +14,78 @@ setOnlineBadge(
   document.getElementById('statusText')
 );
 
-
-
 const listEl = document.getElementById('list');
 const clearBtn = document.getElementById('clearBtn');
 
 function render() {
   const items = loadItems();
+  listEl.innerHTML = '';
+
   if (!items.length) {
-    listEl.innerHTML = '<div class="card"><small>Na razie pusto. Kliknij „Dodaj” i utwórz pierwszy wpis.</small></div>';
+    const empty = document.createElement('div');
+    empty.className = 'card';
+
+    const small = document.createElement('small');
+    small.textContent =
+      'Na razie pusto. Kliknij „Dodaj” i utwórz pierwszy wpis.';
+
+    empty.appendChild(small);
+    listEl.appendChild(empty);
     return;
   }
+  
 
-  listEl.innerHTML = items
-    .slice()
-    .reverse()
-    .map((it) => {
-      const dt = new Date(it.createdAt).toLocaleString();
-      return `
-      <div class="item">
-        <h3>${escapeHtml(it.title || 'Bez nazwy')}</h3>
-        <p>${escapeHtml((it.notes || '').slice(0, 120))}${(it.notes||'').length>120?'…':''}</p>
-        <p><small>${dt}${it.location ? ` • lat ${it.location.lat.toFixed(5)}, lon ${it.location.lon.toFixed(5)}` : ''}</small></p>
-        ${it.photoDataUrl ? `<img class="thumb" src="${it.photoDataUrl}" alt="photo" loading="lazy" />` : ''}
-      </div>`;
-    })
-    .join('');
-}
+items
+  .slice()
+  .reverse()
+  .forEach((it) => {
+    const item = document.createElement('div');
+    item.className = 'item';
 
-function escapeHtml(str){
-  return String(str).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const h3 = document.createElement('h3');
+    h3.textContent = it.title || 'Bez nazwy';
+
+    const p = document.createElement('p');
+    p.textContent =
+      it.notes && it.notes.length > 120
+        ? it.notes.slice(0, 120) + '…'
+        : it.notes || '';
+
+    const small = document.createElement('small');
+    small.textContent = new Date(it.createdAt).toLocaleString();
+
+    item.append(h3, p, small);
+
+    if (it.photoDataUrl) {
+      const img = document.createElement('img');
+      img.src = it.photoDataUrl;
+      img.className = 'thumb';
+      img.alt = 'Zdjęcie instrukcji';
+      item.appendChild(img);
+    }
+
+    listEl.appendChild(item);
+  });
 }
 
 clearBtn.addEventListener('click', () => {
-  if (confirm('Na pewno usunąć wszystkie wpisy?')) {
-    saveItems([]);
-    render();
-  }
+  const agree = window.confirm('Na pewno usunąć wszystkie wpisy?');
+  if (!agree) return;
+
+  saveItems([]);
+  render();
 });
+
 
 let deferredPrompt = null;
 const installBtn = document.getElementById('installBtn');
+
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
   installBtn.style.display = 'block';
 });
+
 installBtn.addEventListener('click', async () => {
   if (!deferredPrompt) return;
   deferredPrompt.prompt();
@@ -69,3 +95,4 @@ installBtn.addEventListener('click', async () => {
 });
 
 render();
+
