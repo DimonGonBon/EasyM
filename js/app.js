@@ -1,8 +1,20 @@
-const STORAGE_KEY = 'instructions';
+const CONFIG = {
+  STORAGE_KEY: 'instructions',
+  SERVICE_WORKER_PATH: '/service-worker.js',
+  GEOLOCATION_NOT_AVAILABLE: 'Geolokalizacja niedostępna',
+  GEOLOCATION_TIMEOUT: 10000,
+  STATUS_UPDATE_INTERVAL: 1000,
+  ONLINE_CLASS: 'ok',
+  OFFLINE_CLASS: 'bad',
+  ONLINE_TEXT: 'ONLINE',
+  OFFLINE_TEXT: 'OFFLINE'
+};
 
+// Загружает инструкции текущего пользователя из localStorage (ключ с именем пользователя)
 export function loadItems() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const storageKey = getUserStorageKey('instructions'); // Генерирует ключ типа "instructions_username"
+    const raw = localStorage.getItem(storageKey);
     const data = raw ? JSON.parse(raw) : [];
     return Array.isArray(data) ? data : [];
   } catch (e) {
@@ -13,32 +25,35 @@ export function loadItems() {
 
 export function registerSW() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js');
+    navigator.serviceWorker.register(CONFIG.SERVICE_WORKER_PATH);
   }
 }
 
-
-
+// Сохраняет массив инструкций в localStorage под ключом текущего пользователя
 export function saveItems(items) {
   if (!Array.isArray(items)) {
     console.error('saveItems: invalid data');
     return;
   }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  const storageKey = getUserStorageKey('instructions'); // Каждый пользователь имеет отдельное хранилище
+  localStorage.setItem(storageKey, JSON.stringify(items));
 }
 
 export function setOnlineBadge(dotEl, textEl) {
   const update = () => {
     const online = navigator.onLine;
-    if (dotEl) dotEl.classList.toggle('ok', online);
-    if (dotEl) dotEl.classList.toggle('bad', !online);
-    if (textEl) textEl.textContent = online ? 'ONLINE' : 'OFFLINE';
+    if (dotEl) {
+      dotEl.classList.toggle(CONFIG.ONLINE_CLASS, online);
+      dotEl.classList.toggle(CONFIG.OFFLINE_CLASS, !online);
+    }
+    if (textEl) {
+      textEl.textContent = online ? CONFIG.ONLINE_TEXT : CONFIG.OFFLINE_TEXT;
+    }
   };
   update();
   window.addEventListener('online', update);
   window.addEventListener('offline', update);
-
-  setInterval(update, 1000);
+  setInterval(update, CONFIG.STATUS_UPDATE_INTERVAL);
 }
 
 export function setupOfflineBanner() {
@@ -51,18 +66,16 @@ export function setupOfflineBanner() {
   update();
   window.addEventListener('online', update);
   window.addEventListener('offline', update);
-
-  setInterval(update, 1000);
+  setInterval(update, CONFIG.STATUS_UPDATE_INTERVAL);
 }
-
-
 
 export function requestLocation() {
   return new Promise((resolve, reject) => {
     if (!('geolocation' in navigator)) {
-      reject(new Error('Geolokalizacja niedostępna'));
+      reject(new Error(CONFIG.GEOLOCATION_NOT_AVAILABLE));
       return;
     }
+    // Получает геолокацию с высокой точностью для работы карт
     navigator.geolocation.getCurrentPosition(
       (pos) => resolve({
         lat: pos.coords.latitude,
@@ -70,7 +83,7 @@ export function requestLocation() {
         acc: pos.coords.accuracy
       }),
       (err) => reject(err),
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: CONFIG.GEOLOCATION_TIMEOUT }
     );
   });
 }
@@ -80,6 +93,104 @@ export async function fileToDataURL(file) {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result || ''));
     reader.onerror = reject;
+    // Преобразует файл в Data URL (base64 строку) для сохранения в localStorage
     reader.readAsDataURL(file);
   });
+}
+
+export function showConfirmModal(message) {
+  return new Promise((resolve) => {
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999';
+
+    const dialog = document.createElement('div');
+    dialog.style.cssText = 'background:white;padding:20px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.2);max-width:400px;text-align:center';
+
+    const text = document.createElement('p');
+    text.textContent = message;
+    text.style.marginBottom = '20px';
+
+    const btnContainer = document.createElement('div');
+    btnContainer.style.display = 'flex';
+    btnContainer.style.gap = '10px';
+    btnContainer.style.justifyContent = 'center';
+
+    const btnYes = document.createElement('button');
+    btnYes.textContent = 'Tak';
+    btnYes.style.cssText = 'padding:8px 16px;cursor:pointer;background:#4CAF50;color:white;border:none;border-radius:4px';
+    btnYes.addEventListener('click', () => {
+      modal.remove();
+      resolve(true);
+    });
+
+    const btnNo = document.createElement('button');
+    btnNo.textContent = 'Nie';
+    btnNo.style.cssText = 'padding:8px 16px;cursor:pointer;background:#f44336;color:white;border:none;border-radius:4px';
+    btnNo.addEventListener('click', () => {
+      modal.remove();
+      resolve(false);
+    });
+
+    btnContainer.append(btnYes, btnNo);
+    dialog.append(text, btnContainer);
+    modal.appendChild(dialog);
+    document.body.appendChild(modal);
+  });
+}
+
+export function initializeUser() {
+  const user = sessionStorage.getItem('currentUser');
+  return user ? JSON.parse(user) : null;
+}
+
+// Zapisuje dane zalogowanego użytkownika w sessionStorage (zmienne sesji)
+export function setCurrentUser(username) {
+  sessionStorage.setItem('currentUser', JSON.stringify({ username, loginTime: Date.now() }));
+}
+
+// Czyści dane użytkownika przy wylogowaniu
+export function logoutUser() {
+  sessionStorage.removeItem('currentUser');
+}
+
+// Zwraca aktualnego zalogowanego użytkownika (lub null jeśli nikt nie jest zalogowany)
+export function getCurrentUser() {
+  const user = sessionStorage.getItem('currentUser');
+  return user ? JSON.parse(user).username : null;
+}
+
+// Generuje unikalny klucz dla każdego użytkownika - np. "instructions_anna", "instructions_jan"
+export function getUserStorageKey(prefix = '') {
+  const user = getCurrentUser();
+  if (!user) throw new Error('No user logged in');
+  return prefix ? `${prefix}_${user}` : `data_${user}`;
+}
+
+export function registerUser(username, password) {
+  const users = JSON.parse(localStorage.getItem('users') || '{}');
+  if (users[username]) {
+    return { success: false, error: 'Użytkownik już istnieje' };
+  }
+  
+  // Кодирует пароль в base64 и сохраняет нового пользователя
+  const hashedPassword = btoa(password);
+  users[username] = { password: hashedPassword, created: Date.now() };
+  localStorage.setItem('users', JSON.stringify(users));
+  return { success: true };
+}
+
+// Проверяет правильность пароля и устанавливает вошедшего пользователя
+export function loginUser(username, password) {
+  const users = JSON.parse(localStorage.getItem('users') || '{}');
+  if (!users[username]) {
+    return { success: false, error: 'Użytkownik nie znaleziony' };
+  }
+  
+  const hashedPassword = btoa(password); // То же самое кодирование что и при регистрации
+  if (users[username].password !== hashedPassword) {
+    return { success: false, error: 'Niepoprawne hasło' };
+  }
+  
+  setCurrentUser(username); // Сохраняет что этот пользователь вошёл в систему
+  return { success: true };
 }

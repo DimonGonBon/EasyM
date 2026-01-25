@@ -26,10 +26,11 @@
           <a href="./index.html">Lista</a>
           <a href="./add.html">Dodaj</a>
           <a href="./map.html">Lokalizacja</a>
+          <a href="./login.html">Logowanie</a>
         </nav>
 
-        <div class="badge">
-          <span class="dot off"></span>
+        <div class="badge" title="Status połączenia">
+          <span class="dot bad"></span>
           <span>OFFLINE</span>
         </div>
       </div>
@@ -45,11 +46,20 @@
     </div>
 
     <div class="card stack">
-      <div class="notice">
-        Dostępne offline: Lista wpisów, dodawanie wpisu (zapis lokalny), podgląd zapisanych współrzędnych.
-      </div>
-      <div class="btnRow">
-        <a href="./index.html" style="text-decoration:none"><button class="primary">Wróć do listy</button></a>
+      <h2>Co działa w trybie offline?</h2>
+      <ul style="margin-left: 20px; line-height: 1.8;">
+        <li>✅ Przeglądanie listy wpisów (zapisane dane)</li>
+        <li>✅ Dodawanie nowych wpisów (zostaną zsynchronizowane)</li>
+        <li>✅ Edycja wpisów i dodawanie kroków</li>
+        <li>✅ Przeglądanie mapy z zapisanymi lokalizacjami</li>
+        <li>✅ Aparat fotograficzny i geolokalizacja</li>
+        <li>❌ Logowanie (wymaga internetu do weryfikacji)</li>
+      </ul>
+      
+      <div class="btnRow" style="margin-top: 20px;">
+        <a href="./index.html" style="text-decoration:none; flex: 1;">
+          <button class="primary" style="width: 100%;">Wróć do listy</button>
+        </a>
       </div>
     </div>
   </main>

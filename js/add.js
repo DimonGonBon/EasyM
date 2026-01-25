@@ -5,13 +5,34 @@ import {
   registerSW,
   requestLocation,
   fileToDataURL,
-  setupOfflineBanner
+  setupOfflineBanner,
+  getCurrentUser,
+  logoutUser
 } from './app.js';
+
+if (!getCurrentUser()) {
+  window.location.href = './login.html';
+}
+
+const CONFIG = {
+  MESSAGES: {
+    REQUESTING_LOCATION: 'Proszę o dostęp do lokalizacji…',
+    LOCATION_ERROR: 'Nie udało się pobrać lokalizacji (brak zgody lub GPS wyłączony).',
+    EMPTY_FORM: 'Dodaj przynajmniej tytuł, opis albo zdjęcie.',
+    REDIRECT_PATH: './index.html'
+  },
+  DISPLAY: {
+    LOCATION_PRECISION: 5,
+    ACCURACY_PRECISION: 0
+  }
+};
 
 setupOfflineBanner();
 registerSW();
-setOnlineBadge(document.getElementById('onlineBadge'));
-
+setOnlineBadge(
+  document.getElementById('statusDot'),
+  document.getElementById('statusText')
+);
 
 const titleEl = document.getElementById('title');
 const notesEl = document.getElementById('notes');
@@ -21,31 +42,38 @@ const noPreviewEl = document.getElementById('noPreview');
 const saveBtn = document.getElementById('saveBtn');
 const locBtn = document.getElementById('locBtn');
 const locInfo = document.getElementById('locInfo');
+const logoutLink = document.getElementById('logoutLink');
 
 let photoDataUrl = '';
 let locationObj = null;
 
-
+logoutLink?.addEventListener('click', (e) => {
+  e.preventDefault();
+  logoutUser();
+  window.location.href = './login.html';
+});
 
 photoEl.addEventListener('change', async () => {
   const file = photoEl.files?.[0];
   if (!file) return;
 
-  photoDataUrl = await fileToDataURL(file);
-
+  photoDataUrl = await fileToDataURL(file); // Преобразует файл в Data URL (base64) для сохранения в localStorage
   previewEl.src = photoDataUrl;
   previewEl.style.display = 'block';
   if (noPreviewEl) noPreviewEl.style.display = 'none';
 });
 
 locBtn.addEventListener('click', async () => {
-  locInfo.textContent = 'Proszę o dostęp do lokalizacji…';
+  locInfo.textContent = CONFIG.MESSAGES.REQUESTING_LOCATION;
   try {
-    locationObj = await requestLocation();
-    locInfo.textContent = `OK: lat ${locationObj.lat.toFixed(5)}, lon ${locationObj.lon.toFixed(5)} (±${Math.round(locationObj.acc)} m)`;
+    locationObj = await requestLocation(); // Получает GPS позицию с устройства
+    const latFixed = locationObj.lat.toFixed(CONFIG.DISPLAY.LOCATION_PRECISION);
+    const lonFixed = locationObj.lon.toFixed(CONFIG.DISPLAY.LOCATION_PRECISION);
+    const accRounded = Math.round(locationObj.acc);
+    locInfo.textContent = `OK: lat ${latFixed}, lon ${lonFixed} (±${accRounded} m)`;
   } catch (e) {
     locationObj = null;
-    locInfo.textContent = 'Nie udało się pobrać lokalizacji (brak zgody lub GPS wyłączony).';
+    locInfo.textContent = CONFIG.MESSAGES.LOCATION_ERROR;
   }
 });
 
@@ -54,20 +82,25 @@ saveBtn.addEventListener('click', () => {
   const notes = (notesEl.value || '').trim();
 
   if (!title && !notes && !photoDataUrl) {
-    alert('Dodaj przynajmniej tytuł, opis albo zdjęcie.');
+    alert(CONFIG.MESSAGES.EMPTY_FORM);
     return;
   }
 
-  const items = loadItems();
+  const items = loadItems(); // Загружает все инструкции пользователя
   items.push({
-    id: crypto.randomUUID?.() || String(Date.now()),
+    id: crypto.randomUUID?.() || String(Date.now()), // Генерирует уникальный ID для инструкции
     title,
     notes,
-    photoDataUrl,
-    location: locationObj,
-    createdAt: Date.now()
+    photoDataUrl, // Сохраняет зображение как Data URL (base64)
+    location: locationObj ? { // Сохраняет локацию если пользователь её получил
+      lat: locationObj.lat,
+      lon: locationObj.lon,
+      acc: locationObj.acc
+    } : null,
+    createdAt: Date.now(),
+    steps: [] // Инициализирует пустой массив шагов
   });
-  
-  saveItems(items);
-  window.location.href = './index.html';
+
+  saveItems(items); // Сохраняет весь массив в localStorage с новой инструкцией
+  window.location.href = CONFIG.MESSAGES.REDIRECT_PATH;
 });

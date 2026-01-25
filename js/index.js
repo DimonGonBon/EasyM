@@ -3,8 +3,29 @@ import {
   saveItems,
   setOnlineBadge,
   registerSW,
-  setupOfflineBanner
+  setupOfflineBanner,
+  showConfirmModal,
+  getCurrentUser,
+  logoutUser
 } from './app.js';
+
+const CONFIG = {
+  EMPTY_MESSAGE: 'Na razie pusto. Kliknij "Dodaj" i utwórz pierwszy wpis.',
+  NO_TITLE: 'Bez nazwy',
+  NOTES_LENGTH_LIMIT: 120,
+  TRUNCATE_SUFFIX: '…',
+  IMAGE_ALT: 'Zdjęcie instrukcji',
+  ITEM_CLASS: 'item',
+  THUMB_CLASS: 'thumb',
+  CARD_CLASS: 'card',
+  CONFIRM_DELETE_ALL: 'Na pewno usunąć wszystkie wpisy?',
+  DISPLAY_BLOCK: 'block',
+  DISPLAY_NONE: 'none'
+};
+
+if (!getCurrentUser()) {
+  window.location.href = './login.html';
+}
 
 setupOfflineBanner();
 registerSW();
@@ -16,74 +37,87 @@ setOnlineBadge(
 
 const listEl = document.getElementById('list');
 const clearBtn = document.getElementById('clearBtn');
+const installBtn = document.getElementById('installBtn');
+const logoutLink = document.getElementById('logoutLink');
+
+let deferredPrompt = null;
+
+logoutLink?.addEventListener('click', (e) => {
+  e.preventDefault();
+  logoutUser();
+  window.location.href = './login.html';
+});
+
+function createEmptyState() {
+  const empty = document.createElement('div');
+  empty.className = CONFIG.CARD_CLASS;
+  const small = document.createElement('small');
+  small.textContent = CONFIG.EMPTY_MESSAGE;
+  empty.appendChild(small);
+  return empty;
+}
+
+function createItemElement(item) {
+  const element = document.createElement('div');
+  element.className = CONFIG.ITEM_CLASS;
+  element.style.cursor = 'pointer';
+  element.addEventListener('click', () => {
+    window.location.href = `./details.html?id=${item.id}`; // Переходит на страницу редактирования инструкции
+  });
+
+  const h3 = document.createElement('h3');
+  h3.textContent = item.title || CONFIG.NO_TITLE;
+
+  const p = document.createElement('p');
+  const noteText = item.notes || '';
+  p.textContent = noteText.length > CONFIG.NOTES_LENGTH_LIMIT
+    ? noteText.slice(0, CONFIG.NOTES_LENGTH_LIMIT) + CONFIG.TRUNCATE_SUFFIX
+    : noteText;
+
+  const small = document.createElement('small');
+  small.textContent = new Date(item.createdAt).toLocaleString();
+
+  element.append(h3, p, small);
+
+  if (item.photoDataUrl) {
+    const img = document.createElement('img');
+    img.src = item.photoDataUrl; // Отображает миниатюру фотографии
+    img.className = CONFIG.THUMB_CLASS;
+    img.alt = CONFIG.IMAGE_ALT;
+    element.appendChild(img);
+  }
+
+  return element;
+}
 
 function render() {
-  const items = loadItems();
+  const items = loadItems(); // Загружает все инструкции из localStorage (данного пользователя)
   listEl.innerHTML = '';
 
   if (!items.length) {
-    const empty = document.createElement('div');
-    empty.className = 'card';
-
-    const small = document.createElement('small');
-    small.textContent =
-      'Na razie pusto. Kliknij „Dodaj” i utwórz pierwszy wpis.';
-
-    empty.appendChild(small);
-    listEl.appendChild(empty);
+    listEl.appendChild(createEmptyState());
     return;
   }
-  
 
-items
-  .slice()
-  .reverse()
-  .forEach((it) => {
-    const item = document.createElement('div');
-    item.className = 'item';
-
-    const h3 = document.createElement('h3');
-    h3.textContent = it.title || 'Bez nazwy';
-
-    const p = document.createElement('p');
-    p.textContent =
-      it.notes && it.notes.length > 120
-        ? it.notes.slice(0, 120) + '…'
-        : it.notes || '';
-
-    const small = document.createElement('small');
-    small.textContent = new Date(it.createdAt).toLocaleString();
-
-    item.append(h3, p, small);
-
-    if (it.photoDataUrl) {
-      const img = document.createElement('img');
-      img.src = it.photoDataUrl;
-      img.className = 'thumb';
-      img.alt = 'Zdjęcie instrukcji';
-      item.appendChild(img);
-    }
-
-    listEl.appendChild(item);
-  });
+  items
+    .slice()
+    .reverse() // Отображает самые свежие инструкции в начале
+    .forEach((item) => {
+      listEl.appendChild(createItemElement(item));
+    });
 }
 
-clearBtn.addEventListener('click', () => {
-  const agree = window.confirm('Na pewno usunąć wszystkie wpisy?');
-  if (!agree) return;
-
-  saveItems([]);
+clearBtn.addEventListener('click', async () => {
+  const confirmed = await showConfirmModal(CONFIG.CONFIRM_DELETE_ALL);
+  if (!confirmed) return;
+  saveItems([]); // Удаляет все инструкции текущего пользователя
   render();
 });
-
-
-let deferredPrompt = null;
-const installBtn = document.getElementById('installBtn');
 
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  installBtn.style.display = 'block';
+  installBtn.style.display = CONFIG.DISPLAY_BLOCK;
 });
 
 installBtn.addEventListener('click', async () => {
@@ -91,7 +125,7 @@ installBtn.addEventListener('click', async () => {
   deferredPrompt.prompt();
   await deferredPrompt.userChoice;
   deferredPrompt = null;
-  installBtn.style.display = 'none';
+  installBtn.style.display = CONFIG.DISPLAY_NONE;
 });
 
 render();

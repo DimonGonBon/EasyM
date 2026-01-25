@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#1f5eff" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./css/style.css">
+  <title>EasyManual — Logowanie</title>
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    .login-container {
+      max-width: 400px;
+      margin: 60px auto;
+      padding: 20px;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .tabs button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: #e0e0e0;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .tabs button.active {
+      background: #1f5eff;
+      color: white;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .form-error {
+      color: #f44336;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    .form-success {
+      color: #4CAF50;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <div class="row">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <strong>EasyManual</strong>
+            <small>Logowanie</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="login-container">
+      <div class="tabs">
+        <button id="loginTab" class="active">Logowanie</button>
+        <button id="registerTab">Rejestracja</button>
+      </div>
+
+      <div id="loginForm" class="tab-content active">
+        <div class="card stack">
+          <h2>Zaloguj się</h2>
+          <div id="loginError" class="form-error" style="display:none"></div>
+          
+          <div>
+            <label for="loginUsername">Nazwa użytkownika</label>
+            <input id="loginUsername" type="text" placeholder="Wpisz nazwę" />
+          </div>
+
+          <div>
+            <label for="loginPassword">Hasło</label>
+            <input id="loginPassword" type="password" placeholder="Wpisz hasło" />
+          </div>
+
+          <button id="loginBtn" class="primary" style="width: 100%; margin-top: 10px;">Zaloguj</button>
+        </div>
+      </div>
+
+      <div id="registerForm" class="tab-content">
+        <div class="card stack">
+          <h2>Utwórz konto</h2>
+          <div id="registerError" class="form-error" style="display:none"></div>
+          <div id="registerSuccess" class="form-success" style="display:none"></div>
+          
+          <div>
+            <label for="registerUsername">Nazwa użytkownika</label>
+            <input id="registerUsername" type="text" placeholder="Wpisz nazwę" />
+          </div>
+
+          <div>
+            <label for="registerPassword">Hasło</label>
+            <input id="registerPassword" type="password" placeholder="Minimum 4 znaki" />
+          </div>
+
+          <div>
+            <label for="registerPasswordConfirm">Potwierdź hasło</label>
+            <input id="registerPasswordConfirm" type="password" placeholder="Powtórz hasło" />
+          </div>
+
+          <button id="registerBtn" class="primary" style="width: 100%; margin-top: 10px;">Zarejestruj</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="footer">EasyManual • PWA</div>
+
+  <script type="module" src="js/login.js"></script>
+</body>
+</html>

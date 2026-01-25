@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#1f5eff" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./css/style.css">
+  <title>EasyManual — Szczegóły</title>
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    .steps-list {
+      margin-top: 20px;
+    }
+    .step-item {
+      background: #f5f5f5;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .step-number {
+      font-weight: bold;
+      color: #1f5eff;
+      margin-right: 10px;
+    }
+    .step-text {
+      flex: 1;
+    }
+    .step-actions {
+      display: flex;
+      gap: 5px;
+    }
+    .step-actions button {
+      padding: 4px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      border: none;
+      border-radius: 3px;
+      background: #e0e0e0;
+    }
+    .step-actions button:hover {
+      background: #d0d0d0;
+    }
+    .step-actions button.delete {
+      background: #f44336;
+      color: white;
+    }
+    .step-actions button.delete:hover {
+      background: #da190b;
+    }
+    .edit-mode {
+      background: #e3f2fd;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+    .edit-mode textarea {
+      width: 100%;
+      min-height: 60px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <div class="row">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <strong>EasyManual</strong>
+            <small>Szczegóły instrukcji</small>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <a href="./index.html">Lista</a>
+          <a href="./add.html">Dodaj</a>
+          <a href="./map.html">Lokalizacja</a>
+          <a href="#" id="logoutLink" style="color: #f44336; cursor: pointer;">Wyloguj</a>
+        </nav>
+
+        <div class="badge" title="Status połączenia">
+          <span id="statusDot" class="dot"></span>
+          <span id="statusText">ONLINE</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="card stack">
+      <div>
+        <label for="instructionTitle">Tytuł instrukcji</label>
+        <div id="titleDisplay" style="display: block; padding: 10px; background: #f5f5f5; border-radius: 4px; margin-bottom: 10px;"></div>
+        <input id="instructionTitle" type="text" placeholder="Tytuł" style="display: none;" />
+        <button id="editTitleBtn" class="secondary" style="margin-top: 10px;">Edytuj tytuł</button>
+        <button id="saveTitleBtn" class="primary" style="display: none; margin-top: 10px;">Zapisz tytuł</button>
+        <button id="cancelTitleBtn" class="secondary" style="display: none; margin-top: 10px;">Anuluj</button>
+      </div>
+
+      <div id="photoContainer" style="margin-top: 20px; display: none;">
+        <label>Zdjęcie</label>
+        <img id="instructionPhoto" class="thumb" alt="Zdjęcie instrukcji" />
+      </div>
+
+      <div id="locationContainer" style="margin-top: 20px; display: none;">
+        <label>Lokalizacja</label>
+        <div id="locationDisplay" class="sub"></div>
+      </div>
+
+      <div id="createdAtContainer" style="margin-top: 20px;">
+        <label>Data utworzenia</label>
+        <div id="createdAtDisplay" class="sub"></div>
+      </div>
+    </div>
+
+    <div class="card stack" style="margin-top: 20px;">
+      <div>
+        <h2>Kroki instrukcji</h2>
+        
+        <div class="edit-mode" style="display: none;" id="addStepForm">
+          <textarea id="newStepText" placeholder="Opis kroku..."></textarea>
+          <div class="btnRow">
+            <button id="addStepBtn" class="primary">Dodaj krok</button>
+            <button id="cancelAddBtn" class="secondary">Anuluj</button>
+          </div>
+        </div>
+
+        <button id="addStepToggleBtn" class="secondary" style="margin-bottom: 20px;">+ Dodaj nowy krok</button>
+
+        <div id="stepsList" class="steps-list"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+      <div class="btnRow">
+        <a href="./index.html" style="text-decoration: none;">
+          <button class="secondary">Powrót do listy</button>
+        </a>
+        <button id="deleteBtn" class="secondary" style="background: #f44336; color: white;">Usuń instrukcję</button>
+      </div>
+    </div>
+  </main>
+
+  <div class="footer">EasyManual • PWA</div>
+
+  <script type="module" src="js/details.js"></script>
+</body>
+
+<div id="offlineBanner" class="offline-banner" hidden>
+  Brak połączenia z Internetem. Aplikacja działa w trybie offline.
+</div>
+</html>
