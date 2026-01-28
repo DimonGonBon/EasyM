@@ -17,7 +17,7 @@ const registerBtn = document.getElementById('registerBtn');
 const registerError = document.getElementById('registerError');
 const registerSuccess = document.getElementById('registerSuccess');
 
-/* ПРОВЕРКА СТАТУСА ОФЛАЙН - отключает кнопки при отсутствии интернета */
+/* ПРОВЕРКА СТАТУСА ОФЛАЙН отключает кнопки при отсутствии интернета */
 function checkOfflineStatus() {
   if (!navigator.onLine) { // Проверяет есть ли интернет
     loginError.textContent = '⚠️ Brak internetu! Logowanie wymaga połączenia z siecią.';
@@ -53,7 +53,7 @@ function showTab(tab) {
 loginTab.addEventListener('click', () => showTab('login'));
 registerTab.addEventListener('click', () => showTab('register'));
 
-/* ВХОД В АККАУНТ - проверяет учетные данные */
+/* Проверяет учетные данные при входе */
 loginBtn.addEventListener('click', () => {
   const username = loginUsername.value.trim();
   const password = loginPassword.value;
@@ -66,14 +66,14 @@ loginBtn.addEventListener('click', () => {
     return;
   }
 
-  const result = loginUser(username, password); // Проверяет пароль в localStorage
+  const result = loginUser(username, password); // Проверяет пароль в локалке
   if (!result.success) {
     loginError.textContent = result.error;
     loginError.style.display = 'block';
     return;
   }
 
-  window.location.href = './index.html'; // Если успех - переходит на список инструкций
+  window.location.href = './index.html'; // Если успех переходит на главную
 });
 
 registerBtn.addEventListener('click', () => {
@@ -108,7 +108,7 @@ registerBtn.addEventListener('click', () => {
     return;
   }
 
-  const result = registerUser(username, password); // Zapisuje nowego użytkownika do localStorage
+  const result = registerUser(username, password); // Сохраняет нового пользователя в локалку
   if (!result.success) {
     registerError.textContent = result.error;
     registerError.style.display = 'block';
@@ -122,6 +122,6 @@ registerBtn.addEventListener('click', () => {
   registerPasswordConfirm.value = '';
 
   setTimeout(() => {
-    showTab('login'); // Przechodzi na kartę logowania po 2 sekundach
+    showTab('login'); // Преходит на логин после успешной регистрации
   }, 2000);
 });

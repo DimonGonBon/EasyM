@@ -91,7 +91,7 @@ function createItemElement(item) {
 }
 
 function render() {
-  const items = loadItems(); // Загружает все инструкции из localStorage (данного пользователя)
+  const items = loadItems(); // Загружает все инструкции пользователя из локалки
   listEl.innerHTML = '';
 
   if (!items.length) {
@@ -101,13 +101,13 @@ function render() {
 
   items
     .slice()
-    .reverse() // Отображает самые свежие инструкции в начале
+    .reverse() // Отображает новые инструкции в начале
     .forEach((item) => {
       listEl.appendChild(createItemElement(item));
     });
 }
 
-/* КНОПКА УДАЛЕНИЯ ВСЕХ - очищает все инструкции */
+/* Удаление всех инструкций */
 clearBtn.addEventListener('click', async () => {
   const confirmed = await showConfirmModal(CONFIG.CONFIRM_DELETE_ALL);
   if (!confirmed) return;

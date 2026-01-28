@@ -10,10 +10,10 @@ const CONFIG = {
   OFFLINE_TEXT: 'OFFLINE'
 };
 
-// Загружает инструкции текущего пользователя из localStorage (ключ с именем пользователя)
+// Загружает пользователя из локалки со своим айди
 export function loadItems() {
   try {
-    const storageKey = getUserStorageKey('instructions'); // Генерирует ключ типа "instructions_username"
+    const storageKey = getUserStorageKey('instructions'); // Генерирует ключ типа instructions_username
     const raw = localStorage.getItem(storageKey);
     const data = raw ? JSON.parse(raw) : [];
     return Array.isArray(data) ? data : [];
@@ -29,7 +29,7 @@ export function registerSW() {
   }
 }
 
-// Сохраняет массив инструкций в localStorage под ключом текущего пользователя
+// Сохраняет инструкции в локалку под айди пользователя
 export function saveItems(items) {
   if (!Array.isArray(items)) {
     console.error('saveItems: invalid data');
@@ -75,7 +75,7 @@ export function requestLocation() {
       reject(new Error(CONFIG.GEOLOCATION_NOT_AVAILABLE));
       return;
     }
-    // Получает геолокацию с высокой точностью для работы карт
+    // Получает геолокацию высокой точности
     navigator.geolocation.getCurrentPosition(
       (pos) => resolve({
         lat: pos.coords.latitude,
@@ -93,7 +93,7 @@ export async function fileToDataURL(file) {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result || ''));
     reader.onerror = reject;
-    // Преобразует файл в Data URL (base64 строку) для сохранения в localStorage
+    // Преобразует файл в датаюрл для сохранения в локалку
     reader.readAsDataURL(file);
   });
 }
@@ -143,23 +143,23 @@ export function initializeUser() {
   return user ? JSON.parse(user) : null;
 }
 
-// Zapisuje dane zalogowanego użytkownika w sessionStorage (zmienne sesji)
+// Сохраняет данные вошедшего пользователя в ссесию
 export function setCurrentUser(username) {
   sessionStorage.setItem('currentUser', JSON.stringify({ username, loginTime: Date.now() }));
 }
 
-// Czyści dane użytkownika przy wylogowaniu
+// Очищает данные после вылогина
 export function logoutUser() {
   sessionStorage.removeItem('currentUser');
 }
 
-// Zwraca aktualnego zalogowanego użytkownika (lub null jeśli nikt nie jest zalogowany)
+// Возвращает аткуальный логин пользователя
 export function getCurrentUser() {
   const user = sessionStorage.getItem('currentUser');
   return user ? JSON.parse(user).username : null;
 }
 
-// Generuje unikalny klucz dla każdego użytkownika - np. "instructions_anna", "instructions_jan"
+// генерирует уникальный ключ для каждого юзера 
 export function getUserStorageKey(prefix = '') {
   const user = getCurrentUser();
   if (!user) throw new Error('No user logged in');

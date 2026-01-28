@@ -91,7 +91,7 @@ function displayInstruction() {
   renderSteps();
 }
 
-// Wyświetla listę kroków instrukcji - każdy krok można usunąć indywidualnie
+// Показывает список шагов инструкции
 function renderSteps() {
   stepsList.innerHTML = '';
 
@@ -121,11 +121,11 @@ function renderSteps() {
     const deleteStepBtn = document.createElement('button');
     deleteStepBtn.textContent = 'Usuń';
     deleteStepBtn.className = 'delete';
-    /* УДАЛЕНИЕ ШАГА - удаляет шаг из массива и сохраняет изменения */
+    /* Удаляет шаг из массива и сохраняет изменения */
     deleteStepBtn.addEventListener('click', () => {
-      instruction.steps.splice(index, 1); // Usuwa krok z tablicy
-      saveItems(loadItems().map(i => i.id === itemId ? instruction : i)); // Zapisuje całą instrukcję ze zmienioną listą kroków
-      renderSteps(); // Przeładowuje widok
+      instruction.steps.splice(index, 1); // Удаляет шаг из массива
+      saveItems(loadItems().map(i => i.id === itemId ? instruction : i)); // Сохраняет всю инструкцию с изменениями
+      renderSteps(); // Обновляет 
     });
 
     stepActions.appendChild(deleteStepBtn);
@@ -150,12 +150,12 @@ saveTitleBtn.addEventListener('click', () => {
     return;
   }
 
-  instruction.title = newTitle; // Zmienia tytuł w pamięci
-  const items = loadItems(); // Ładuje wszystkie instrukcje
-  const index = items.findIndex(i => i.id === itemId); // Znajduje tę instrukcję
+  instruction.title = newTitle; // Меняет заголовок инструкции
+  const items = loadItems(); // Подключает все инструкции из локалки
+  const index = items.findIndex(i => i.id === itemId); // Ищет нужную инструкцию
   if (index >= 0) {
-    items[index] = instruction; // Zastępuje zmienioną instrukcję
-    saveItems(items); // Zapisuje wszystkie dane do localStorage
+    items[index] = instruction; // Заменяет измененную инструкцию
+    saveItems(items); // Записывает все данные в локалку
   }
 
   editingTitle = false;
@@ -189,7 +189,7 @@ cancelAddBtn.addEventListener('click', () => {
   newStepText.value = '';
 });
 
-/* ДОБАВЛЕНИЕ НОВОГО ШАГА - добавляет шаг к инструкции */
+/* Добавляет шаг к инструкции */
 addStepBtn.addEventListener('click', () => {
   const stepText = newStepText.value.trim();
   if (!stepText) {
@@ -197,12 +197,12 @@ addStepBtn.addEventListener('click', () => {
     return;
   }
 
-  instruction.steps.push({ text: stepText, createdAt: Date.now() }); // Dodaje nowy krok do tablicy
-  const items = loadItems(); // Ładuje wszystkie instrukcje z localStorage
-  const index = items.findIndex(i => i.id === itemId); // Znajduje bieżącą instrukcję
+  instruction.steps.push({ text: stepText, createdAt: Date.now() }); // добавляет новый шаг в массив
+  const items = loadItems(); // Подключает все инструкции из локалки
+  const index = items.findIndex(i => i.id === itemId); // Ищет нужную инструкцию
   if (index >= 0) {
-    items[index] = instruction; // Aktualizuje instrukcję z nowymi krokami
-    saveItems(items); // Zapisuje wszystkie zmiany
+    items[index] = instruction; // Обновляет инструкцию с новым шагом
+    saveItems(items); // Сохраняет все изменения
   }
 
   newStepText.value = '';
@@ -211,15 +211,15 @@ addStepBtn.addEventListener('click', () => {
   renderSteps();
 });
 
-/* УДАЛЕНИЕ ИНСТРУКЦИИ - удаляет всю инструкцию и возвращает на список */
+/* Удаляет всю инструкцию и возвращает на список */
 deleteBtn.addEventListener('click', async () => {
   const confirmed = await showConfirmModal('Na pewno usunąć tę instrukcję?');
   if (!confirmed) return;
 
-  const items = loadItems(); // Ладует все інструкції
-  const filtered = items.filter(i => i.id !== itemId); // Удаляет біжучу інструкцію з массива
-  saveItems(filtered); // Записывает все оставшиеся інструкції
-  window.location.href = './index.html'; // Возвращается на список
+  const items = loadItems(); // Подключает все инструкции 
+  const filtered = items.filter(i => i.id !== itemId); // Удаляет текущую инструкцию из массива
+  saveItems(filtered); // Записывает все оставшиеся
+  window.location.href = './index.html'; // Возвращается на главный экран
 });
 
 logoutLink?.addEventListener('click', (e) => {

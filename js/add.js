@@ -53,18 +53,18 @@ logoutLink?.addEventListener('click', (e) => {
   window.location.href = './login.html';
 });
 
-/* ЗАГРУЗКА ФОТО - преобразует файл в Data URL для сохранения */
+/* Фото преобразует файл в Data URL для сохранения */
 photoEl.addEventListener('change', async () => {
   const file = photoEl.files?.[0];
   if (!file) return;
 
-  photoDataUrl = await fileToDataURL(file); // Преобразует файл в Data URL (base64) для сохранения в localStorage
+  photoDataUrl = await fileToDataURL(file); // Преобразует файл в датаюрл для сохранения локалку
   previewEl.src = photoDataUrl;
   previewEl.style.display = 'block';
   if (noPreviewEl) noPreviewEl.style.display = 'none';
 });
 
-/* ПОЛУЧЕНИЕ ЛОКАЦИИ - использует Geolocation API */
+/*Получение локации */
 locBtn.addEventListener('click', async () => {
   locInfo.textContent = CONFIG.MESSAGES.REQUESTING_LOCATION;
   try {
@@ -79,7 +79,7 @@ locBtn.addEventListener('click', async () => {
   }
 });
 
-/* СОХРАНЕНИЕ ИНСТРУКЦИИ - записывает данные в localStorage */
+/* Сохранение инструкций записывает данные в локалку*/
 saveBtn.addEventListener('click', () => {
   const title = (titleEl.value || '').trim();
   const notes = (notesEl.value || '').trim();
@@ -94,16 +94,16 @@ saveBtn.addEventListener('click', () => {
     id: crypto.randomUUID?.() || String(Date.now()), // Генерирует уникальный ID для инструкции
     title,
     notes,
-    photoDataUrl, // Сохраняет зображение как Data URL (base64)
+    photoDataUrl, // Сохраняет изображение как датаюрл басе 64
     location: locationObj ? { // Сохраняет локацию если пользователь её получил
       lat: locationObj.lat,
       lon: locationObj.lon,
       acc: locationObj.acc
     } : null,
     createdAt: Date.now(),
-    steps: [] // Инициализирует пустой массив шагов
+    steps: [] 
   });
 
-  saveItems(items); // Сохраняет весь массив в localStorage с новой инструкцией
+  saveItems(items); // Сохраняет весь массив в локалку с новой инструкцией
   window.location.href = CONFIG.MESSAGES.REDIRECT_PATH;
 });
