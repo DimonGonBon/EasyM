@@ -1,5 +1,7 @@
 
+/* Адаптивные стили для мобильных устройств */
 @media (max-width: 600px) {
+  /* Меню на мобиле переходит в колонку */
   .nav { flex-direction: column; gap: 6px; }
   .headerRow { flex-direction: column; }
 }

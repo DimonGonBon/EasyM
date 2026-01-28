@@ -53,6 +53,7 @@ logoutLink?.addEventListener('click', (e) => {
   window.location.href = './login.html';
 });
 
+/* ЗАГРУЗКА ФОТО - преобразует файл в Data URL для сохранения */
 photoEl.addEventListener('change', async () => {
   const file = photoEl.files?.[0];
   if (!file) return;
@@ -63,6 +64,7 @@ photoEl.addEventListener('change', async () => {
   if (noPreviewEl) noPreviewEl.style.display = 'none';
 });
 
+/* ПОЛУЧЕНИЕ ЛОКАЦИИ - использует Geolocation API */
 locBtn.addEventListener('click', async () => {
   locInfo.textContent = CONFIG.MESSAGES.REQUESTING_LOCATION;
   try {
@@ -77,6 +79,7 @@ locBtn.addEventListener('click', async () => {
   }
 });
 
+/* СОХРАНЕНИЕ ИНСТРУКЦИИ - записывает данные в localStorage */
 saveBtn.addEventListener('click', () => {
   const title = (titleEl.value || '').trim();
   const notes = (notesEl.value || '').trim();

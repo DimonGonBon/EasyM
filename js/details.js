@@ -121,6 +121,7 @@ function renderSteps() {
     const deleteStepBtn = document.createElement('button');
     deleteStepBtn.textContent = 'Usuń';
     deleteStepBtn.className = 'delete';
+    /* УДАЛЕНИЕ ШАГА - удаляет шаг из массива и сохраняет изменения */
     deleteStepBtn.addEventListener('click', () => {
       instruction.steps.splice(index, 1); // Usuwa krok z tablicy
       saveItems(loadItems().map(i => i.id === itemId ? instruction : i)); // Zapisuje całą instrukcję ze zmienioną listą kroków
@@ -188,6 +189,7 @@ cancelAddBtn.addEventListener('click', () => {
   newStepText.value = '';
 });
 
+/* ДОБАВЛЕНИЕ НОВОГО ШАГА - добавляет шаг к инструкции */
 addStepBtn.addEventListener('click', () => {
   const stepText = newStepText.value.trim();
   if (!stepText) {
@@ -209,14 +211,15 @@ addStepBtn.addEventListener('click', () => {
   renderSteps();
 });
 
+/* УДАЛЕНИЕ ИНСТРУКЦИИ - удаляет всю инструкцию и возвращает на список */
 deleteBtn.addEventListener('click', async () => {
   const confirmed = await showConfirmModal('Na pewno usunąć tę instrukcję?');
   if (!confirmed) return;
 
-  const items = loadItems(); // Ładuje wszystkie instrukcje
-  const filtered = items.filter(i => i.id !== itemId); // Usuwa bieżącą instrukcję z tablicy
-  saveItems(filtered); // Zapisuje wszystkie pozostałe instrukcje
-  window.location.href = './index.html'; // Wraca na listę
+  const items = loadItems(); // Ладует все інструкції
+  const filtered = items.filter(i => i.id !== itemId); // Удаляет біжучу інструкцію з массива
+  saveItems(filtered); // Записывает все оставшиеся інструкції
+  window.location.href = './index.html'; // Возвращается на список
 });
 
 logoutLink?.addEventListener('click', (e) => {

@@ -107,6 +107,7 @@ function render() {
     });
 }
 
+/* КНОПКА УДАЛЕНИЯ ВСЕХ - очищает все инструкции */
 clearBtn.addEventListener('click', async () => {
   const confirmed = await showConfirmModal(CONFIG.CONFIRM_DELETE_ALL);
   if (!confirmed) return;

@@ -57,12 +57,14 @@
       </div>
 
       <div class="grid2">
+        <!-- Тут загрузка фото с камеры или галереи -->
         <div>
           <label for="photo">Zdjęcie (kamera)</label>
           <input id="photo" type="file" accept="image/*" capture="environment" />
           <div class="sub" style="margin-top:6px">Jeśli nie działa, wybierz zdjęcie z galerii.</div>
         </div>
 
+        <!-- Тут предпросмотр выбранного фото -->
         <div>
           <label>Podgląd</label>
           <img id="preview" class="thumb" alt="Podgląd zdjęcia" style="display:none" />
@@ -70,9 +72,12 @@
         </div>
       </div>
 
+      <!-- Тут получение локации и сохранение инструкции -->
       <div class="card" style="box-shadow:none;border-style:dashed">
         <div class="btnRow">
+          <!-- Тут функция получения GPS координат -->
           <button id="locBtn" class="secondary" type="button">Pobierz lokalizację</button>
+          <!-- Тут функция сохранения в localStorage -->
           <button id="saveBtn" class="primary" type="button">Zapisz</button>
         </div>
         <div id="locInfo" class="sub" style="margin-top:8px"></div>

@@ -17,6 +17,7 @@ const registerBtn = document.getElementById('registerBtn');
 const registerError = document.getElementById('registerError');
 const registerSuccess = document.getElementById('registerSuccess');
 
+/* ПРОВЕРКА СТАТУСА ОФЛАЙН - отключает кнопки при отсутствии интернета */
 function checkOfflineStatus() {
   if (!navigator.onLine) { // Проверяет есть ли интернет
     loginError.textContent = '⚠️ Brak internetu! Logowanie wymaga połączenia z siecią.';
@@ -52,6 +53,7 @@ function showTab(tab) {
 loginTab.addEventListener('click', () => showTab('login'));
 registerTab.addEventListener('click', () => showTab('register'));
 
+/* ВХОД В АККАУНТ - проверяет учетные данные */
 loginBtn.addEventListener('click', () => {
   const username = loginUsername.value.trim();
   const password = loginPassword.value;

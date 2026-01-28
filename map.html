@@ -26,7 +26,8 @@
           <a href="./index.html">Lista</a>
           <a href="./add.html">Dodaj</a>
           <a class="active" href="./map.html">Lokalizacja</a>
-          <a href="#" id="logoutLink" style="color: #f44336; cursor: pointer;">Wyloguj</a>
+        <!-- Тут кнопка выхода -->
+        <a href="#" id="logoutLink" style="color: #f44336; cursor: pointer;">Wyloguj</a>
         </nav>
 
         <div class="badge" title="Status połączenia">
@@ -44,16 +45,20 @@
         <div class="sub">Wymaga zgody w przeglądarce (HTTPS lub localhost)</div>
       </div>
       <div class="btnRow">
+        <!-- Тут функция получения текущей локации через Geolocation API -->
         <button id="btnLocate" class="secondary" type="button">Pobierz bieżącą lokalizację</button>
+        <!-- Тут копирование координат в буфер обмена -->
         <button id="btnCopy" class="primary" type="button">Kopiuj współrzędne</button>
       </div>
     </div>
 
+    <!-- Тут отображение координат текущей локации -->
     <div class="card stack">
       <div id="coords" class="notice">Współrzędne: —</div>
       <div id="status" class="sub"></div>
     </div>
 
+    <!-- Тут список всех сохраненных локаций из инструкций -->
     <div class="mainTitle" style="margin-top:18px">
       <div>
         <h1>Zapisane współrzędne</h1>
@@ -62,6 +67,7 @@
     </div>
 
     <div id="empty" class="notice">Brak zapisanych lokalizacji.</div>
+    <!-- Тут выводится список локаций -->
     <div id="list" class="list"></div>
   </main>
 

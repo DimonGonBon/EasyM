@@ -93,10 +93,13 @@
   </header>
 
   <main class="container">
+    <!-- Тут редактирование заголовка инструкции -->
     <div class="card stack">
       <div>
         <label for="instructionTitle">Tytuł instrukcji</label>
+        <!-- Тут отображение текущего заголовка -->
         <div id="titleDisplay" style="display: block; padding: 10px; background: #f5f5f5; border-radius: 4px; margin-bottom: 10px;"></div>
+        <!-- Тут скрытое поле для редактирования -->
         <input id="instructionTitle" type="text" placeholder="Tytuł" style="display: none;" />
         <button id="editTitleBtn" class="secondary" style="margin-top: 10px;">Edytuj tytuł</button>
         <button id="saveTitleBtn" class="primary" style="display: none; margin-top: 10px;">Zapisz tytuł</button>
@@ -119,10 +122,12 @@
       </div>
     </div>
 
+    <!-- Тут управление шагами инструкции -->
     <div class="card stack" style="margin-top: 20px;">
       <div>
         <h2>Kroki instrukcji</h2>
         
+        <!-- Тут форма добавления нового шага -->
         <div class="edit-mode" style="display: none;" id="addStepForm">
           <textarea id="newStepText" placeholder="Opis kroku..."></textarea>
           <div class="btnRow">
@@ -137,11 +142,13 @@
       </div>
     </div>
 
+    <!-- Тут кнопки действий с инструкцией -->
     <div class="card" style="margin-top: 20px;">
       <div class="btnRow">
         <a href="./index.html" style="text-decoration: none;">
           <button class="secondary">Powrót do listy</button>
         </a>
+        <!-- Тут функция удаления инструкции -->
         <button id="deleteBtn" class="secondary" style="background: #f44336; color: white;">Usuń instrukcję</button>
       </div>
     </div>
