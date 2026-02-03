@@ -1,11 +1,10 @@
 const CONFIG = {
-  CACHE_NAME: 'easymanual-offline-v4',
+  CACHE_NAME: 'easymanual-offline-v5',
   ASSETS: [
-    '/',
     '/index.html',
+    '/login.html',
     '/add.html',
     '/map.html',
-    '/login.html',
     '/details.html',
     '/offline.html',
     '/css/style.css',
@@ -16,9 +15,7 @@ const CONFIG = {
     '/js/map.js',
     '/js/login.js',
     '/js/details.js',
-    '/manifest.json',
-    '/icons/icon-192.png',
-    '/icons/icon-512.png'
+    '/manifest.json'
   ],
   OFFLINE_PAGE: '/offline.html',
   DOCUMENT_EXTENSIONS: ['.html', '.json']
@@ -28,7 +25,14 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CONFIG.CACHE_NAME).then((cache) => {
       // Кэширует все указанные файлы при установке Service Workera
-      return cache.addAll(CONFIG.ASSETS);
+      // Используем addAll с обработкой ошибок - не критично если одна иконка не кэшируется
+      return Promise.all(
+        CONFIG.ASSETS.map(url =>
+          cache.add(url).catch(err => {
+            console.warn(`Failed to cache ${url}:`, err);
+          })
+        )
+      );
     })
   );
   self.skipWaiting();
