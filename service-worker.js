@@ -1,6 +1,14 @@
 const CONFIG = {
-  CACHE_NAME: 'easymanual-offline-v6',
+  CACHE_NAME: 'easymanual-offline-v7',
   STATIC_ASSETS: [
+    '/',
+    '/index.html',
+    '/login.html',
+    '/add.html',
+    '/details.html',
+    '/map.html',
+    '/offline.html',
+
     '/css/style.css',
     '/css/responsive.css',
     '/js/app.js',
@@ -9,7 +17,9 @@ const CONFIG = {
     '/js/map.js',
     '/js/login.js',
     '/js/details.js',
-    '/manifest.json'
+    '/manifest.json',
+    '/icons/icon-192.png',
+    '/icons/icon-512.png'
   ],
   DOCUMENT_EXTENSIONS: ['.html', '.json'],
   OFFLINE_PAGE: '/offline.html'
@@ -19,13 +29,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CONFIG.CACHE_NAME).then((cache) => {
       // Кэшируем только статические ассеты при установке, не документы
-      return Promise.all(
-        CONFIG.STATIC_ASSETS.map(url =>
-          cache.add(url).catch(err => {
-            console.warn(`Failed to cache ${url}:`, err);
-          })
-        )
-      );
+      return cache.addAll(CONFIG.STATIC_ASSETS);
     })
   );
   self.skipWaiting();
@@ -47,20 +51,20 @@ self.addEventListener('fetch', (event) => {
   
   if (request.method !== 'GET') return;
 
-  const url = new URL(request.url);
-  const isDocument = CONFIG.DOCUMENT_EXTENSIONS.some(ext => url.pathname.endsWith(ext));
-  const isAsset = url.pathname.includes('/css/') || url.pathname.includes('/js/');
+  const isDocument =
+    request.headers.get('accept') &&
+    request.headers.get('accept').includes('text/html');
+
+  const isAsset =
+    request.url.includes('/css/') ||
+    request.url.includes('/js/') ||
+    request.url.includes('/icons/');
 
   // Стратегия для документов: network-first (сначала сеть)
   if (isDocument) {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          if (!response || response.status !== 200) {
-            return caches.match(request)
-              .then(cached => cached || caches.match(CONFIG.OFFLINE_PAGE))
-              .then(res => res || new Response('Offline', { status: 503 }));
-          }
           const responseToCache = response.clone();
           caches.open(CONFIG.CACHE_NAME).then((cache) => {
             cache.put(request, responseToCache);
@@ -85,9 +89,6 @@ self.addEventListener('fetch', (event) => {
           
           return fetch(request)
             .then((response) => {
-              if (!response || response.status !== 200) {
-                return response;
-              }
               const responseToCache = response.clone();
               caches.open(CONFIG.CACHE_NAME).then((cache) => {
                 cache.put(request, responseToCache);
@@ -106,12 +107,10 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(request)
       .then((response) => {
-        if (response && response.status === 200) {
-          const responseToCache = response.clone();
-          caches.open(CONFIG.CACHE_NAME).then((cache) => {
-            cache.put(request, responseToCache);
-          });
-        }
+        const responseToCache = response.clone();
+        caches.open(CONFIG.CACHE_NAME).then((cache) => {
+          cache.put(request, responseToCache);
+        });
         return response;
       })
       .catch(() => {
