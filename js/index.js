@@ -62,7 +62,7 @@ function createItemElement(item) {
   element.className = CONFIG.ITEM_CLASS;
   element.style.cursor = 'pointer';
   element.addEventListener('click', () => {
-    window.location.href = `./details.html?id=${item.id}`; // Переходит на страницу редактирования инструкции
+    window.location.href = `./details.html?id=${item.id}`;
   });
 
   const h3 = document.createElement('h3');
@@ -81,7 +81,7 @@ function createItemElement(item) {
 
   if (item.photoDataUrl) {
     const img = document.createElement('img');
-    img.src = item.photoDataUrl; // Отображает миниатюру фотографии
+    img.src = item.photoDataUrl;
     img.className = CONFIG.THUMB_CLASS;
     img.alt = CONFIG.IMAGE_ALT;
     element.appendChild(img);
@@ -91,7 +91,7 @@ function createItemElement(item) {
 }
 
 function render() {
-  const items = loadItems(); // Загружает все инструкции пользователя из локалки
+  const items = loadItems();
   listEl.innerHTML = '';
 
   if (!items.length) {
@@ -101,7 +101,7 @@ function render() {
 
   items
     .slice()
-    .reverse() // Отображает новые инструкции в начале
+    .reverse()
     .forEach((item) => {
       listEl.appendChild(createItemElement(item));
     });
@@ -111,8 +111,9 @@ function render() {
 clearBtn.addEventListener('click', async () => {
   const confirmed = await showConfirmModal(CONFIG.CONFIRM_DELETE_ALL);
   if (!confirmed) return;
-  saveItems([]); // Удаляет все инструкции текущего пользователя
+  saveItems([]);
   render();
 });
 
-
+/* Рендер списка при загрузке страницы */
+render();
