@@ -1,5 +1,5 @@
 const CONFIG = {
-  CACHE_NAME: 'easymanual-offline-v3',
+  CACHE_NAME: 'easymanual-offline-v4',
   ASSETS: [
     '/',
     '/index.html',
