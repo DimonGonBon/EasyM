@@ -57,7 +57,9 @@ self.addEventListener('fetch', (event) => {
       fetch(request)
         .then((response) => {
           if (!response || response.status !== 200) {
-            return caches.match(request) || caches.match(CONFIG.OFFLINE_PAGE);
+            return caches.match(request)
+              .then(cached => cached || caches.match(CONFIG.OFFLINE_PAGE))
+              .then(res => res || new Response('Offline', { status: 503 }));
           }
           const responseToCache = response.clone();
           caches.open(CONFIG.CACHE_NAME).then((cache) => {
@@ -66,7 +68,9 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => {
-          return caches.match(request) || caches.match(CONFIG.OFFLINE_PAGE);
+          return caches.match(request)
+            .then(cached => cached || caches.match(CONFIG.OFFLINE_PAGE))
+            .then(res => res || new Response('Offline', { status: 503 }));
         })
     );
     return;
@@ -75,24 +79,25 @@ self.addEventListener('fetch', (event) => {
   // Стратегия для ассетов: cache-first (сначала кэш)
   if (isAsset) {
     event.respondWith(
-      caches.match(request).then((cached) => {
-        if (cached) return cached;
-        
-        return fetch(request)
-          .then((response) => {
-            if (!response || response.status !== 200) {
+      caches.match(request)
+        .then((cached) => {
+          if (cached) return cached;
+          
+          return fetch(request)
+            .then((response) => {
+              if (!response || response.status !== 200) {
+                return response;
+              }
+              const responseToCache = response.clone();
+              caches.open(CONFIG.CACHE_NAME).then((cache) => {
+                cache.put(request, responseToCache);
+              });
               return response;
-            }
-            const responseToCache = response.clone();
-            caches.open(CONFIG.CACHE_NAME).then((cache) => {
-              cache.put(request, responseToCache);
+            })
+            .catch(() => {
+              return new Response('Asset not found', { status: 404 });
             });
-            return response;
-          })
-          .catch(() => {
-            return caches.match(request);
-          });
-      })
+        })
     );
     return;
   }
@@ -110,7 +115,9 @@ self.addEventListener('fetch', (event) => {
         return response;
       })
       .catch(() => {
-        return caches.match(request) || caches.match(CONFIG.OFFLINE_PAGE);
+        return caches.match(request)
+          .then(cached => cached || caches.match(CONFIG.OFFLINE_PAGE))
+          .then(res => res || new Response('Offline', { status: 503 }));
       })
   );
 });
