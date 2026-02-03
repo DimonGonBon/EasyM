@@ -1,12 +1,6 @@
 const CONFIG = {
-  CACHE_NAME: 'easymanual-offline-v5',
-  ASSETS: [
-    '/index.html',
-    '/login.html',
-    '/add.html',
-    '/map.html',
-    '/details.html',
-    '/offline.html',
+  CACHE_NAME: 'easymanual-offline-v6',
+  STATIC_ASSETS: [
     '/css/style.css',
     '/css/responsive.css',
     '/js/app.js',
@@ -17,17 +11,16 @@ const CONFIG = {
     '/js/details.js',
     '/manifest.json'
   ],
-  OFFLINE_PAGE: '/offline.html',
-  DOCUMENT_EXTENSIONS: ['.html', '.json']
+  DOCUMENT_EXTENSIONS: ['.html', '.json'],
+  OFFLINE_PAGE: '/offline.html'
 };
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CONFIG.CACHE_NAME).then((cache) => {
-      // Кэширует все указанные файлы при установке Service Workera
-      // Используем addAll с обработкой ошибок - не критично если одна иконка не кэшируется
+      // Кэшируем только статические ассеты при установке, не документы
       return Promise.all(
-        CONFIG.ASSETS.map(url =>
+        CONFIG.STATIC_ASSETS.map(url =>
           cache.add(url).catch(err => {
             console.warn(`Failed to cache ${url}:`, err);
           })
@@ -42,7 +35,6 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(
-        // Удаляет старые версии кэша если изменится CACHE_NAME
         keys.map((k) => (k !== CONFIG.CACHE_NAME ? caches.delete(k) : null))
       )
     )
@@ -57,33 +49,68 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
   const isDocument = CONFIG.DOCUMENT_EXTENSIONS.some(ext => url.pathname.endsWith(ext));
-  const isAsset = url.pathname.includes('/css/') || url.pathname.includes('/js/') || url.pathname.includes('/icons/');
+  const isAsset = url.pathname.includes('/css/') || url.pathname.includes('/js/');
 
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      // Быстрая стратегия для статических ресурсов - сначала кэш
-      if (cached && (isAsset || isDocument)) {
-        return cached;
-      }
-
-      return fetch(request)
+  // Стратегия для документов: network-first (сначала сеть)
+  if (isDocument) {
+    event.respondWith(
+      fetch(request)
         .then((response) => {
           if (!response || response.status !== 200) {
-            return cached || (isDocument ? caches.match(CONFIG.OFFLINE_PAGE) : response);
+            return caches.match(request) || caches.match(CONFIG.OFFLINE_PAGE);
           }
-
           const responseToCache = response.clone();
           caches.open(CONFIG.CACHE_NAME).then((cache) => {
-            cache.put(request, responseToCache); // Обновляет кэш новыми данными
+            cache.put(request, responseToCache);
           });
           return response;
         })
         .catch(() => {
-          // Если сеть недоступна - возвращает кэшированную версию или офлайн страницу
-          if (cached) return cached;
-          if (isDocument) return caches.match(CONFIG.OFFLINE_PAGE);
-          throw new Error('Offline and no cache');
-        });
-    })
+          return caches.match(request) || caches.match(CONFIG.OFFLINE_PAGE);
+        })
+    );
+    return;
+  }
+
+  // Стратегия для ассетов: cache-first (сначала кэш)
+  if (isAsset) {
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        if (cached) return cached;
+        
+        return fetch(request)
+          .then((response) => {
+            if (!response || response.status !== 200) {
+              return response;
+            }
+            const responseToCache = response.clone();
+            caches.open(CONFIG.CACHE_NAME).then((cache) => {
+              cache.put(request, responseToCache);
+            });
+            return response;
+          })
+          .catch(() => {
+            return caches.match(request);
+          });
+      })
+    );
+    return;
+  }
+
+  // Для остального: network-first с fallback
+  event.respondWith(
+    fetch(request)
+      .then((response) => {
+        if (response && response.status === 200) {
+          const responseToCache = response.clone();
+          caches.open(CONFIG.CACHE_NAME).then((cache) => {
+            cache.put(request, responseToCache);
+          });
+        }
+        return response;
+      })
+      .catch(() => {
+        return caches.match(request) || caches.match(CONFIG.OFFLINE_PAGE);
+      })
   );
 });
