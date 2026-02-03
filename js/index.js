@@ -6,7 +6,8 @@ import {
   setupOfflineBanner,
   showConfirmModal,
   getCurrentUser,
-  logoutUser
+  logoutUser,
+  setupInstallPrompt
 } from './app.js';
 
 const CONFIG = {
@@ -29,6 +30,7 @@ if (!getCurrentUser()) {
 
 setupOfflineBanner();
 registerSW();
+setupInstallPrompt();
 
 setOnlineBadge(
   document.getElementById('statusDot'),
@@ -39,8 +41,6 @@ const listEl = document.getElementById('list');
 const clearBtn = document.getElementById('clearBtn');
 const installBtn = document.getElementById('installBtn');
 const logoutLink = document.getElementById('logoutLink');
-
-let deferredPrompt = null;
 
 logoutLink?.addEventListener('click', (e) => {
   e.preventDefault();
@@ -115,19 +115,4 @@ clearBtn.addEventListener('click', async () => {
   render();
 });
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  installBtn.style.display = CONFIG.DISPLAY_BLOCK;
-});
-
-installBtn.addEventListener('click', async () => {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  await deferredPrompt.userChoice;
-  deferredPrompt = null;
-  installBtn.style.display = CONFIG.DISPLAY_NONE;
-});
-
-render();
 

@@ -7,7 +7,8 @@ import {
   fileToDataURL,
   setupOfflineBanner,
   getCurrentUser,
-  logoutUser
+  logoutUser,
+  setupInstallPrompt
 } from './app.js';
 
 if (!getCurrentUser()) {
@@ -29,6 +30,7 @@ const CONFIG = {
 
 setupOfflineBanner();
 registerSW();
+setupInstallPrompt();
 setOnlineBadge(
   document.getElementById('statusDot'),
   document.getElementById('statusText')

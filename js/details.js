@@ -6,7 +6,8 @@ import {
   setupOfflineBanner,
   showConfirmModal,
   getCurrentUser,
-  logoutUser
+  logoutUser,
+  setupInstallPrompt
 } from './app.js';
 
 if (!getCurrentUser()) {
@@ -15,6 +16,7 @@ if (!getCurrentUser()) {
 
 setupOfflineBanner();
 registerSW();
+setupInstallPrompt();
 
 setOnlineBadge(
   document.getElementById('statusDot'),

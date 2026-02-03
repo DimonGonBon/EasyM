@@ -194,3 +194,53 @@ export function loginUser(username, password) {
   setCurrentUser(username); // Сохраняет что этот пользователь вошёл в систему
   return { success: true };
 }
+// Инициализирует функцию установки приложения
+export function setupInstallPrompt() {
+  let deferredPrompt = null;
+
+  // Перехватываем событие beforeinstallprompt
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredPrompt = event;
+    showInstallButton();
+  });
+
+  // Обработчик для кнопки установки
+  const installLink = document.getElementById('installAppLink');
+  if (installLink) {
+    installLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      if (!deferredPrompt) {
+        // Если nativePrompt не сработал, показываем инструкцию
+        alert('Приложение можно установить через меню браузера (Share → Add to Home Screen на мобиле, или меню браузера на ПК)');
+        return;
+      }
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`Пользователь выбрал: ${outcome}`);
+      deferredPrompt = null;
+      hideInstallButton();
+    });
+  }
+
+  // Скрываем кнопку при успешной установке
+  window.addEventListener('appinstalled', () => {
+    console.log('PWA была установлена');
+    hideInstallButton();
+  });
+}
+
+function showInstallButton() {
+  const link = document.getElementById('installAppLink');
+  if (link) {
+    link.style.display = 'inline';
+    link.style.color = '#1f5eff';
+  }
+}
+
+function hideInstallButton() {
+  const link = document.getElementById('installAppLink');
+  if (link) {
+    link.style.display = 'none';
+  }
+}

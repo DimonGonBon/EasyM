@@ -4,7 +4,8 @@ import {
   setOnlineBadge,
   loadItems,
   getCurrentUser,
-  logoutUser
+  logoutUser,
+  setupInstallPrompt
 } from './app.js';
 
 if (!getCurrentUser()) {
@@ -31,6 +32,7 @@ const CONFIG = {
 
 setupOfflineBanner();
 registerSW();
+setupInstallPrompt();
 
 setOnlineBadge(
   document.getElementById('statusDot'),
