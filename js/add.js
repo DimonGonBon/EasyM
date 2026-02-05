@@ -60,7 +60,7 @@ photoEl.addEventListener('change', async () => {
   const file = photoEl.files?.[0];
   if (!file) return;
 
-  photoDataUrl = await fileToDataURL(file); // Преобразует файл в датаюрл для сохранения локалку
+  photoDataUrl = await fileToDataURL(file);
   previewEl.src = photoDataUrl;
   previewEl.style.display = 'block';
   if (noPreviewEl) noPreviewEl.style.display = 'none';
@@ -70,7 +70,7 @@ photoEl.addEventListener('change', async () => {
 locBtn.addEventListener('click', async () => {
   locInfo.textContent = CONFIG.MESSAGES.REQUESTING_LOCATION;
   try {
-    locationObj = await requestLocation(); // Получает GPS позицию с устройства
+    locationObj = await requestLocation();
     const latFixed = locationObj.lat.toFixed(CONFIG.DISPLAY.LOCATION_PRECISION);
     const lonFixed = locationObj.lon.toFixed(CONFIG.DISPLAY.LOCATION_PRECISION);
     const accRounded = Math.round(locationObj.acc);
