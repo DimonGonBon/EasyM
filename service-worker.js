@@ -28,7 +28,7 @@ const CONFIG = {
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CONFIG.CACHE_NAME).then((cache) => {
-      // Кэшируем только статические ассеты при установке, не документы
+      // заранее сохраняет в кеш список файлов
       return cache.addAll(CONFIG.STATIC_ASSETS);
     })
   );
