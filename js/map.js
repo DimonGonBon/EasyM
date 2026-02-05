@@ -98,6 +98,7 @@ function createMapCardElement(item) {
 
 function renderList() {
   const items = loadItems(); // Загружает все инструкции пользователя
+  
   // Фильтрует только инструкции которые имеют сохранённую геолокацию
   const withGeo = items.filter(i => i.location?.lat != null && i.location?.lon != null);
 
